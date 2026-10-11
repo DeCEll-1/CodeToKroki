@@ -1,0 +1,91 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeToKroki</title>
+    <link rel="stylesheet" href="./libs/prism.css">
+    <link rel="stylesheet" href="./libs/notyf.min.css">
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="container">
+            <div><span class="rounded-l">Language:</span> <select id="language_selection"> </select>
+            </div>
+            <div><span>Font Size:</span> <select id="font_size">
+                    <option value="12px">12px</option>
+                    <option value="14px">14px</option>
+                    <option value="16px" selected>16px</option>
+                    <option value="18px">18px</option>
+                    <option value="20px">20px</option>
+                    <option value="24px">24px</option>
+                    <option value="28px">28px</option>
+                    <option value="32px">32px</option>
+                </select>
+            </div>
+            <div><button class="rounded-r" onclick="togglePreview()">Toggle preview</button></div>
+            <div></div>
+            <div>
+                <button class="rounded-l" onclick="copyBBCode()">Copy for BBCode</button>
+            </div>
+            <div>
+                <button class="rounded-r" onclick="copyHTML()">Copy for HTML</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="result-preview d-none" id="result_preview">
+
+    </div>
+
+    <div class="code-input">
+        <pre>
+            <textarea spellcheck="false"></textarea>
+            <code></code>
+        </pre>
+    </div>
+
+    <script>
+
+        const isDev = window.location.hostname.includes("localhost") || window.location.hostname === '127.0.0.1';
+        const scriptUrls = ["./libs/prism.js", "./libs/notyf.min.js", "./libs/pako_deflate.js"];
+        const loadeds = scriptUrls.map(s => false);
+
+        function addScript(s) {
+            const script = document.createElement('script');
+            script.src = s;
+            // script.type = "module"
+            document.head.appendChild(script);
+            return script;
+        }
+
+        function checkAddMain() {
+            if (loadeds.every(s => s))
+                addScript("./dist/index.js");
+        }
+        let i = 0;
+        scriptUrls.forEach(u => {
+            const isMinAlready = u.includes(".min");
+            if (!isMinAlready)
+                if (isDev) {
+                    u = u.replace(".js", ".dev.js");
+                } else {
+                    u = u.replace(".js", ".min.js");
+                }
+            addScript(u).onload = () => {
+                loadeds[i] = true;
+                i++;
+                checkAddMain();
+            };
+        })
+
+    </script>
+
+    <!-- <script type="module" src="dist/index.js"></script> -->
+
+</body>
+
+</html>
